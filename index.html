@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -154,22 +153,13 @@ section, .share-section {
   line-height: 1.2;
 }
 .hero-photo {
-  width: 300px; height: 375px;
+  width: min(340px, 90vw);
   margin: 0 auto 20px;
-  position: relative;
-  transform: translateX(10px); /* frame 개구부 비대칭 보정 */
-}
-.hero-photo-bg {
-  position: absolute;
-  top: 91.9px; left: 66.2px;
-  width: 148.9px; height: 211.5px;
-  object-fit: cover; z-index: 1;
   display: block;
 }
-.hero-photo-frame {
-  position: absolute; top:0; left:0;
-  width:100%; height:100%;
-  object-fit: contain; z-index: 2; pointer-events: none;
+.hero-photo img {
+  width: 100%;
+  display: block;
 }
 .photo-icon { font-size: 36px; opacity: 0.25; }
 .photo-text {
@@ -179,7 +169,7 @@ section, .share-section {
 }
 .hero-names {
   font-family: 'Great Vibes', cursive;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 36px;
   color: var(--accent);
   line-height: 1.1;
@@ -586,8 +576,7 @@ footer {
   
     <div class="hero-inner">
     <div class="hero-photo">
-      <img class="hero-photo-bg" src="data/main.jpg" alt="메인 사진">
-      <img class="hero-photo-frame" id="heroFrame" src="data/frame.png" alt="frame">
+      <img src="data/frame.png" alt="frame">
     </div>
     <p class="hero-names" style="white-space:nowrap;">James<span class="hero-names-amp">&</span>Elena</p>
     <div class="hero-divider"><span></span><span class="hero-heart">♥</span><span></span></div>
@@ -1333,8 +1322,8 @@ footer {
   .gs-track.dragging { cursor: grabbing; }
   .gs-item {
     flex-shrink: 0;
-    width: 120px;
-    height: 160px;
+    width: 180px;
+    height: 240px;
     overflow: hidden;
   }
   .gs-item img {
@@ -2009,43 +1998,6 @@ footer {
       copyText(window.location.href, 'Invitation link copied!');
     }
   }
-  // ── FRAME PHOTO FIT ──
-  function fitPhotoToFrame() {
-    var frameImg = document.getElementById('heroFrame');
-    var photoBg  = document.querySelector('.hero-photo-bg');
-    if (!frameImg || !photoBg) return;
-    try {
-      var nw = frameImg.naturalWidth, nh = frameImg.naturalHeight;
-      var canvas = document.createElement('canvas');
-      canvas.width = nw; canvas.height = nh;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(frameImg, 0, 0);
-      var d = ctx.getImageData(0, 0, nw, nh).data;
-      var cx = Math.floor(nw / 2), cy = Math.floor(nh / 2);
-      // 중앙이 투명한지 확인
-      if (d[(cy * nw + cx) * 4 + 3] > 64) return;
-      // 상하좌우로 투명 영역 경계 탐색
-      var top = cy, bot = cy, lft = cx, rgt = cx;
-      while (top > 0    && d[((top-1) * nw + cx) * 4 + 3] < 64) top--;
-      while (bot < nh-1 && d[((bot+1) * nw + cx) * 4 + 3] < 64) bot++;
-      while (lft > 0    && d[(cy * nw + (lft-1)) * 4 + 3] < 64) lft--;
-      while (rgt < nw-1 && d[(cy * nw + (rgt+1)) * 4 + 3] < 64) rgt++;
-      // 컨테이너 300×375, object-fit:contain 으로 스케일
-      var cw = 300, ch = 375;
-      var scale = Math.min(cw / nw, ch / nh);
-      var dw = nw * scale, dh = nh * scale;
-      var ox = (cw - dw) / 2, oy = (ch - dh) / 2;
-      photoBg.style.position = 'absolute';
-      photoBg.style.left   = (ox + lft * scale) + 'px';
-      photoBg.style.top    = (oy + top * scale) + 'px';
-      photoBg.style.width  = ((rgt - lft) * scale) + 'px';
-      photoBg.style.height = ((bot - top) * scale) + 'px';
-      photoBg.style.objectFit = 'cover';
-    } catch(e) { console.warn('frame fit error', e); }
-  }
-  var _heroFrame = document.getElementById('heroFrame');
-  if (_heroFrame && _heroFrame.complete) { fitPhotoToFrame(); }
-  else if (_heroFrame) { _heroFrame.addEventListener('load', fitPhotoToFrame); }
 
   function openLoveStory() {
     document.getElementById('storyOverlay').style.display = 'block';
